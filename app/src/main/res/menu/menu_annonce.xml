@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.annoncepei.AnnonceActivity">
+    <item
+        android:id="@+id/call"
+        android:icon="@drawable/ic_call_black_24dp"
+        android:title="Contacter" />
+
+    <item
+        android:id="@+id/email"
+        android:icon="@drawable/ic_message_white_24dp"
+        android:title="Message" />
+
+    <item
+        android:id="@+id/fav"
+        android:icon="@drawable/ic_favorite_border_white_24dp"
+        android:title="Sauvegarder" />
+</menu>
