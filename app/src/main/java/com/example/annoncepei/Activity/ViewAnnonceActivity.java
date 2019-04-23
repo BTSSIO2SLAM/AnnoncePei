@@ -1,4 +1,4 @@
-package com.example.annoncepei;
+package com.example.annoncepei.Activity;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,19 +14,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.annoncepei.Models.Annonce;
 import com.example.annoncepei.Models.Favoris;
-import com.example.annoncepei.Networking.ApiConfig;
-import com.example.annoncepei.Networking.AppConfig;
+import com.example.annoncepei.R;
+import com.example.annoncepei.Util.AppConfig;
+import com.example.annoncepei.Services.FavorisService;
+import com.example.annoncepei.Util.UserSession;
 import com.squareup.picasso.Picasso;
-import com.synnapps.carouselview.ImageListener;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 
-public class AnnonceActivity extends AppCompatActivity {
+public class ViewAnnonceActivity extends AppCompatActivity {
 
     ImageView imageView;
+    UserSession session;
+    int utilisateurID;
 
     int[] sampleImages = {R.drawable.ike, R.drawable.inkling, R.drawable.link, R.drawable.lucario};
     private TextView txtTitre, txtDetails, textPrix;
@@ -33,30 +36,54 @@ public class AnnonceActivity extends AppCompatActivity {
     private float prix;
     private String titre, details, urlphoto;
 
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.call:
+                    dialPhoneNumber("0692214026");
+                case R.id.email:
+                    return true;
+                case R.id.fav:
+                    addToFavs();
+                    return true;
+            }
+            return false;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_annonce);
+        setContentView(R.layout.activity_view_annonce);
+
+        session = new UserSession(getApplicationContext());
+
+        utilisateurID = session.getCurrentUserId();
+
 
         txtTitre = findViewById(R.id.editTitre);
         txtDetails = findViewById(R.id.editDetails);
         textPrix = findViewById(R.id.editPrix);
         imageView = (ImageView) findViewById(R.id.imageView);
 
+
+        // TOOLBAR
+        Toolbar toolbar = findViewById(R.id.toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+
+
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
         //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         LoadExtraContent();
-
     }
-
-    ImageListener imageListener = new ImageListener() {
-        @Override
-        public void setImageForPosition(int position, ImageView imageView) {
-            imageView.setImageResource(sampleImages[position]);
-        }
-    };
 
     private void LoadExtraContent() {
         id = getIntent().getIntExtra("id",0);
@@ -79,28 +106,11 @@ public class AnnonceActivity extends AppCompatActivity {
         textPrix.setText(String.valueOf(prix)+"€");
 
         String urlOfImage = urlphoto.replaceAll("localhost","10.0.2.2");
-        Picasso.with(AnnonceActivity.this)
+        Picasso.with(ViewAnnonceActivity.this)
                 .load(urlOfImage)
                 .into(imageView);
 
     }
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.call:
-                    dialPhoneNumber("0692214026");
-                case R.id.email:
-                    return true;
-                case R.id.fav:
-                    return true;
-            }
-            return false;
-        }
-    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -122,7 +132,7 @@ public class AnnonceActivity extends AppCompatActivity {
         } else if (id == R.id.email) {
 
         } else if (id == R.id.fav) {
-
+            addToFavs();
         }
 
         return super.onOptionsItemSelected(item);
@@ -136,4 +146,33 @@ public class AnnonceActivity extends AppCompatActivity {
         }
     }
 
+    public void addToFavs() {
+
+        // NEW FAVORIS
+        Favoris favoris = new Favoris();
+        favoris.setAnnonceID(id);
+        favoris.setUtilisateurID(utilisateurID);
+
+        // INITIALISATION
+        FavorisService getResponse = AppConfig.getRetrofit().create(FavorisService.class);
+        Call<Favoris> call = getResponse.favoris_new("token", favoris );
+        call.enqueue(new Callback<Favoris>() {
+            @Override
+            public void onResponse(Call<Favoris> call, retrofit2.Response<Favoris> response) {
+                if (response.isSuccessful()) {
+                    if (response.body() != null) {
+                        Favoris favoris = response.body();
+                        Toast.makeText(getApplicationContext(),"Ajouté aux favoris", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "problem uploading image", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Favoris> call, Throwable t) {
+                Log.v("Response gotten is", t.getMessage());
+            }
+        });
+    }
 }

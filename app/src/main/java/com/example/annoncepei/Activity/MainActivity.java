@@ -1,8 +1,7 @@
-package com.example.annoncepei;
+package com.example.annoncepei.Activity;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -31,6 +30,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.annoncepei.Models.Annonce;
+import com.example.annoncepei.R;
+import com.example.annoncepei.Util.AnnonceAdapter;
+import com.example.annoncepei.Util.UserSession;
 
 import org.json.JSONArray;
 import org.json.JSONException;

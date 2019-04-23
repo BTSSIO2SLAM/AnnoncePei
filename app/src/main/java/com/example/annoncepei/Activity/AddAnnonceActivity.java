@@ -1,13 +1,11 @@
-package com.example.annoncepei;
+package com.example.annoncepei.Activity;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
@@ -16,7 +14,6 @@ import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -32,10 +29,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.example.annoncepei.BuildConfig;
 import com.example.annoncepei.Models.Annonce;
 import com.example.annoncepei.Models.Categorie;
-import com.example.annoncepei.Networking.ApiConfig;
-import com.example.annoncepei.Networking.AppConfig;
+import com.example.annoncepei.R;
+import com.example.annoncepei.Services.AnnonceService;
+import com.example.annoncepei.Util.AppConfig;
+import com.example.annoncepei.Util.UserSession;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -305,17 +305,6 @@ public class AddAnnonceActivity extends AppCompatActivity {
 
     }
 
-    private File createPhotoFile() {
-        String name = new SimpleDateFormat("yyyyMMdd HHmmss").format(new Date());
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File image = null;
-        try {
-            image = File.createTempFile(name,".jpg",storageDir);
-        } catch (IOException e){
-            Log.d("myLog","Excep : "+e.toString());
-        }
-        return image;
-    }
 
     File createImageFile() throws IOException {
         Logger.getAnonymousLogger().info("Generating the image - method started");
@@ -433,8 +422,7 @@ public class AddAnnonceActivity extends AppCompatActivity {
             annonce.setPrix(Integer.parseInt(prix.getText().toString()));
             Categorie categorieSelected = (Categorie) spinner.getSelectedItem();
             annonce.setCategorieID(categorieSelected.getId());
-            //annonce.setUtilisateurID(session.getCurrentUserId());
-            annonce.setImage("test");
+            annonce.setUtilisateurID(session.getCurrentUserId());
 
             // Map is used to multipart the file using okhttp3.RequestBody
             Map<String, RequestBody> map = new HashMap<>();
@@ -443,8 +431,8 @@ public class AddAnnonceActivity extends AppCompatActivity {
             RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), file);
             map.put("file\"; filename=\"" + file.getName() + "\"", requestBody);
 
-            ApiConfig getResponse = AppConfig.getRetrofit().create(ApiConfig.class);
-            Call<Annonce> call = getResponse.addAnnonce("token", map, annonce );
+            AnnonceService getResponse = AppConfig.getRetrofit().create(AnnonceService.class);
+            Call<Annonce> call = getResponse.annonce_new("token", map, annonce );
             call.enqueue(new Callback<Annonce>() {
                 @Override
                 public void onResponse(Call<Annonce> call, retrofit2.Response<Annonce> response) {

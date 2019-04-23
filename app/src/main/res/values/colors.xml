@@ -6,4 +6,5 @@
     <color name="colorPrimaryLight">#84FF19</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorGray">#CCCCCC</color>
+    <color name="link">#2196f3</color>
 </resources>

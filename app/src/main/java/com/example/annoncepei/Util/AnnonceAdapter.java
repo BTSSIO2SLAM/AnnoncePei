@@ -1,4 +1,4 @@
-package com.example.annoncepei;
+package com.example.annoncepei.Util;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.annoncepei.Models.Annonce;
+import com.example.annoncepei.R;
+import com.example.annoncepei.Activity.ViewAnnonceActivity;
 import com.squareup.picasso.Picasso;
 
 import java.io.InputStream;

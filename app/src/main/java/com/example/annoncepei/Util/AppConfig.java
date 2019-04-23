@@ -1,4 +1,4 @@
-package com.example.annoncepei.Networking;
+package com.example.annoncepei.Util;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

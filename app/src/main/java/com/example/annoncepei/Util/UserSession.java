@@ -1,4 +1,4 @@
-package com.example.annoncepei;
+package com.example.annoncepei.Util;
 
 import java.util.HashMap;
 
@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+
+import com.example.annoncepei.Activity.LoginActivity;
+import com.example.annoncepei.Activity.MainActivity;
 
 public class UserSession {
     // Shared Preferences reference
